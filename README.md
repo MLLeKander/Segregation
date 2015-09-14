@@ -5,7 +5,7 @@ Project for Distributed Multi-Agent Systems, an extension of Thomas Schelling's 
 `javac *.java`
 
 ## Run
-`javac SchellingMain`
+`java SchellingMain`
 
 Optional runtime parameters are:
 
