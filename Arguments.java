@@ -79,6 +79,17 @@ public class Arguments {
         return s == null ? def : Double.parseDouble(s);
     }
     
+    public boolean getBool(String key) {
+        String s = get_(key);
+        if (s == null) throw new IllegalArgumentException("Could not find required double key: "+key);
+        return Boolean.parseBoolean(s);
+    }
+    
+    public boolean getBool(String key, boolean def) {
+        String s = get_(key);
+        return s == null ? def : Boolean.parseBoolean(s);
+    }
+    
     public boolean hasDefault() {
         return defaultArg != null;
     }
