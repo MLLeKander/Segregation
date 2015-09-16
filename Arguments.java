@@ -24,7 +24,7 @@ public class Arguments {
     }
     
     public String keyLiteral(String key) {
-        return "--"+key;
+        return "--"+key.toLowerCase();
     }
     
     private String get_(String key) {

@@ -7,7 +7,7 @@ public class SchellingBoard extends Board {
       for (Agent[] row : cells) {
          for (Agent a : row) {
             SchellingAgent sa = (SchellingAgent)a;
-            char c = sa == null ? '.' : sa.color ? 'X' : 'O';
+            char c = sa == null ? '.' : sa.color ? '#' : 'O';
             System.out.print(c);
          }
          System.out.println();

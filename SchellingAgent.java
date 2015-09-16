@@ -1,11 +1,12 @@
 import java.util.*;
 
 public class SchellingAgent extends Agent {
-   private double similarity;
+   private double similarityMin, similarityMax;
    public boolean color;
 
-   public SchellingAgent(double similarity, boolean color) {
-      this.similarity = similarity;
+   public SchellingAgent(double similarityMin, double similarityMax, boolean color) {
+      this.similarityMin = similarityMin;
+      this.similarityMax = similarityMax;
       this.color = color;
    }
 
@@ -21,7 +22,7 @@ public class SchellingAgent extends Agent {
 
       for (int drow = -1; drow <= 1; drow++) {
          for (int dcol = -1; dcol <= 1; dcol++) {
-            if (drow != 0 || dcol != 0) {
+            //if (drow != 0 || dcol != 0) {
                SchellingAgent n = boundedGetAgent(board,row+drow,col+dcol);
                if (n != null) {
                   neighborCnt++;
@@ -29,10 +30,10 @@ public class SchellingAgent extends Agent {
                      similarCnt++;
                   }
                }
-            }
+            //}
          }
       }
-      return similarCnt >= neighborCnt*similarity;
+      return similarCnt >= neighborCnt*similarityMin && similarCnt <= neighborCnt*similarityMax;
    }
    
    private boolean isBounded(Board b, int r, int c) {
@@ -82,6 +83,7 @@ public class SchellingAgent extends Agent {
             }
          }
       }
+      //System.err.println("No satisfactory location found. Agent type: "+(color ? "#" : "O")+". Moving from ["+start.r+","+start.c+"] to ["+tmp.r+","+tmp.c+"].");
       return tmp;
    }
 }
