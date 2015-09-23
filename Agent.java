@@ -1,4 +1,4 @@
-public abstract class Agent {
-   public abstract boolean isSatisfied(Board b);
-   public abstract void act(Board b);
+public interface Agent<AgentType extends Agent<AgentType>> {
+   public boolean isSatisfied(Board<AgentType> b);
+   public void act(Board<AgentType> b);
 }

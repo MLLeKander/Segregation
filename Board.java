@@ -1,21 +1,23 @@
 import java.util.*;
+import java.lang.reflect.Array;
 
-public class Board {
-   protected Agent[][] cells;
-   protected HashMap<Agent, Point> agentLookup = new HashMap<Agent, Point>();
+public class Board<AgentType extends Agent<AgentType>> {
+   private AgentType[][] cells;
+   protected HashMap<AgentType, Point> agentLookup = new HashMap<AgentType, Point>();
    private int agentCnt = 0;
    private Point boardSize;
 
+   @SuppressWarnings("unchecked")
    public Board(int r, int c) {
-      cells = new Agent[r][c];
+      cells = (AgentType[][])Array.newInstance(Agent.class,r,c);
       boardSize = new Point(r,c);
    }
 
-   public void addAgent(Agent a, int r, int c) {
+   public void addAgent(AgentType a, int r, int c) {
       addAgent(a, new Point(r,c));
    }
 
-   public void addAgent(Agent a, Point p) {
+   public void addAgent(AgentType a, Point p) {
       if (cells[p.r][p.c] != null) {
          throw new IllegalArgumentException(String.format("Attempt to place agent at [%d,%d], which is not null.",p.r,p.c));
       } else if (agentLookup.containsKey(a)) {
@@ -27,20 +29,24 @@ public class Board {
       agentCnt++;
    }
 
-   public Point getPos(Agent a) {
+   public Point getPos(AgentType a) {
       return agentLookup.get(a);
    }
 
-   public Agent getAgent(int r, int c) {
+   public AgentType getAgent(int r, int c) {
       return cells[r][c];
    }
 
-   public Agent getAgent(Point p) {
+   public AgentType getAgent(Point p) {
       return cells[p.r][p.c];
    }
 
    public int getNumAgents() {
       return agentCnt;
+   }
+
+   public int getNumEmpty() {
+      return boardSize.r*boardSize.c - agentCnt;
    }
 
    public Point getBoardSize() {
@@ -51,27 +57,28 @@ public class Board {
     * Perform a single epoch, whereby unsatisfied agents move in the board.
     *    Returns true if at least one agent was unsatisfied during this epoch.
     */
+   @SuppressWarnings("unchecked")
    public boolean performEpoch() {
-      ArrayList<Agent> unsatisfieds = new ArrayList<Agent>();
-      for (Agent[] row : cells) {
-         for (Agent a : row) {
-            if (a != null && !a.isSatisfied(this)) {
+      ArrayList<AgentType> unsatisfieds = new ArrayList<AgentType>();
+      for (AgentType[] row : cells) {
+         for (AgentType a : row) {
+            if (a != null && !(a).isSatisfied(this)) {
                unsatisfieds.add(a);
             }
          }
       }
 
-      for (Agent a : unsatisfieds) {
+      for (AgentType a : unsatisfieds) {
          a.act(this);
       }
       return unsatisfieds.size() != 0;
    }
 
    /**
-    * Move the specified agent to the specified location.
+    * Move an agent to the specified location.
     *  Throws an IllegalArgumentException if to already contains an agent.
     */
-   public void move(Agent a, Point to) {
+   public void move(AgentType a, Point to) {
       if (cells[to.r][to.c] != null) {
          throw new IllegalArgumentException(String.format("Attempt to move to [%d,%d], which is not null.",to.r,to.c));
       }

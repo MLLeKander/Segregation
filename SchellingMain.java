@@ -20,7 +20,7 @@ public class SchellingMain {
       for (int r = 0; r < rows; r++) {
          for (int c = 0; c < cols; c++) {
             double randDbl = rand.nextDouble();
-            Agent a = null;
+            SchellingAgent a = null;
             if (randDbl < wThresh) {
                a = new SchellingAgent(similarity, similarityMax, false);
             } else if (randDbl > 1-bThresh) {
