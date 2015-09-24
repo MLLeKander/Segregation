@@ -1,6 +1,6 @@
 
-public class SchellingBoard extends Board<SchellingAgent> {
-   public SchellingBoard(int r, int c) {
+public class DoubleBoard extends Board<DoubleAgent> {
+   public DoubleBoard(int r, int c) {
       super(r,c);
    }
 
@@ -16,7 +16,7 @@ public class SchellingBoard extends Board<SchellingAgent> {
       }
    }
 
-   public void colorForAgentAt(SchellingAgent a, Point p) {
+   public void colorForAgentAt(DoubleAgent a, Point p) {
       colorForScore(a.satisfactionScoreAt(this,p));
    }
 
@@ -24,17 +24,20 @@ public class SchellingBoard extends Board<SchellingAgent> {
       Point boardSize = getBoardSize();
       for (int i = 0; i < boardSize.r; i++) {
          for (int j = 0; j < boardSize.c; j++) {
-            SchellingAgent a = getAgent(i,j);
-            char c = a == null ? '.' : a.color ? '#' : 'O';
+            DoubleAgent a = getAgent(i,j);
             if (a != null) {
                colorForAgentAt(a, new Point(i,j));
             }
-            System.out.print(c);
+            String s = "  ";
+            if (a != null) {
+               s = (a.colorA ? "{" : "<") + (a.colorB ? "}" : ">");
+            }
+            System.out.print(s);
             Colors.reset();
          }
          System.out.print("   ");
          for (int j = 0; j < boardSize.c; j++) {
-            SchellingAgent a = getAgent(i,j);
+            DoubleAgent a = getAgent(i,j);
             if (a == null) {
                System.out.print("    ");
             } else {

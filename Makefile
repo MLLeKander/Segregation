@@ -3,10 +3,11 @@
 	javac $*.java
 
 FILES = \
-		 Agent.java Board.java Point.java Arguments.java Colors.java\
+		 Agent.java Board.java Point.java Arguments.java Colors.java \
 		 AbstractAgent.java \
 		 MigrationStrategy.java ClosestSatisfied.java CompositeStrategy.java MostSatisfied.java \
-		 SchellingAgent.java SchellingBoard.java SchellingMain.java
+		 SchellingAgent.java SchellingBoard.java SchellingMain.java \
+		 DoubleAgent.java DoubleBoard.java DoubleMain.java
 
 all: Segregation.jar
 
