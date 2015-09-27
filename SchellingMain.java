@@ -12,8 +12,11 @@ public class SchellingMain {
       double wThresh = args.getDbl("wThresh", 0.4);
       double bThresh = args.getDbl("bThresh", 0.4);
       boolean animate = args.getBool("animate", false);
+      boolean color = args.getBool("color", true);
 
-      System.err.printf("Proceeding with seed=%d, maxIters=%d, rows=%d, cols=%d, similarity=%.3f, similarityMax=%.3f, wThresh=%.3f, bThresh=%.3f, animate=%b\n", seed, maxIters, rows, cols, similarity, similarityMax, wThresh, bThresh, animate);
+      System.err.printf("Proceeding with seed=%d, maxIters=%d, rows=%d, cols=%d, similarity=%.3f, similarityMax=%.3f, wThresh=%.3f, bThresh=%.3f, animate=%b, color=%b\n", seed, maxIters, rows, cols, similarity, similarityMax, wThresh, bThresh, animate, color);
+
+      Colors.enabled = color;
 
       SchellingBoard board = new SchellingBoard(rows, cols);
       Random rand = new Random(seed);

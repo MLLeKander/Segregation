@@ -13,8 +13,11 @@ public class DoubleMain {
       double aThresh = args.getDbl("aThresh", 0.5);
       double bThresh = args.getDbl("bThresh", 0.5);
       boolean animate = args.getBool("animate", false);
+      boolean color = args.getBool("color", true);
 
-      System.err.printf("Proceeding with seed=%d, maxIters=%d, rows=%d, cols=%d, similarity=%.3f, similarityMax=%.3f, empty=%.3f, aThresh=%.3f, bThresh=%.3f, animate=%b\n", seed, maxIters, rows, cols, similarity, similarityMax, empty, aThresh, bThresh, animate);
+      System.err.printf("Proceeding with seed=%d, maxIters=%d, rows=%d, cols=%d, similarity=%.3f, similarityMax=%.3f, empty=%.3f, aThresh=%.3f, bThresh=%.3f, animate=%b, color=%b\n", seed, maxIters, rows, cols, similarity, similarityMax, empty, aThresh, bThresh, animate, color);
+
+      Colors.enabled = color;
 
       DoubleBoard board = new DoubleBoard(rows, cols);
       Random rand = new Random(seed);
