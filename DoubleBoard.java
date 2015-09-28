@@ -5,11 +5,11 @@ public class DoubleBoard extends Board<DoubleAgent> {
    }
 
    public void colorForScore(double score) {
-      if (score < -0.5) {
+      if (score < 0.25) {
          Colors.lightRed();
-      } else if (score < 0) {
-         Colors.red();
       } else if (score < 0.5) {
+         Colors.red();
+      } else if (score < 0.85) {
          Colors.green();
       } else {
          Colors.lightGreen();
@@ -17,7 +17,7 @@ public class DoubleBoard extends Board<DoubleAgent> {
    }
 
    public void colorForAgentAt(DoubleAgent a, Point p) {
-      colorForScore(a.satisfactionScoreAt(this,p));
+      colorForScore(a.neighborSimilarityAt(this,p));
    }
 
    public void printState() {
@@ -30,23 +30,23 @@ public class DoubleBoard extends Board<DoubleAgent> {
             }
             String s = "  ";
             if (a != null) {
-               s = (a.colorA ? "{" : "<") + (a.colorB ? "}" : ">");
+               s = a.toString();
             }
             System.out.print(s);
             Colors.reset();
          }
-         System.out.print("   ");
-         for (int j = 0; j < boardSize.c; j++) {
-            DoubleAgent a = getAgent(i,j);
-            if (a == null) {
-               System.out.print("    ");
-            } else {
-               double rawScore = a.satisfactionScoreAt(this,new Point(i,j));
-               double score = 10*rawScore;
-               colorForScore(rawScore);
-               System.out.printf(" %+-3.0f",score);
-            }
-         }
+         //System.out.print("   ");
+         //for (int j = 0; j < boardSize.c; j++) {
+         //   DoubleAgent a = getAgent(i,j);
+         //   if (a == null) {
+         //      System.out.print("    ");
+         //   } else {
+         //      double rawScore = a.neighborSimilarityAt(this,new Point(i,j));
+         //      double score = 100*rawScore;
+         //      colorForScore(rawScore);
+         //      System.out.printf(" %3.0f",score);
+         //   }
+         //}
          Colors.reset();
          System.out.println();
       }

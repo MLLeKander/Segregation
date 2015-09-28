@@ -1,7 +1,7 @@
 import java.util.Random;
 
 public class DoubleMain {
-   public static void main(String[] argArr) {
+   public static void main(String[] argArr) throws Exception {
       Arguments args = new Arguments(argArr);
       long seed = args.getLong("seed",1);
       int maxIters = args.getInt("maxIters",100);
@@ -14,8 +14,10 @@ public class DoubleMain {
       double bThresh = args.getDbl("bThresh", 0.5);
       boolean animate = args.getBool("animate", false);
       boolean color = args.getBool("color", true);
+      long sleep = args.getLong("sleep", 0);
+      boolean maximizer = args.getBool("maximizer", false);
 
-      System.err.printf("Proceeding with seed=%d, maxIters=%d, rows=%d, cols=%d, similarity=%.3f, similarityMax=%.3f, empty=%.3f, aThresh=%.3f, bThresh=%.3f, animate=%b, color=%b\n", seed, maxIters, rows, cols, similarity, similarityMax, empty, aThresh, bThresh, animate, color);
+      System.err.printf("Proceeding with seed=%d, maxIters=%d, rows=%d, cols=%d, similarity=%.3f, similarityMax=%.3f, empty=%.3f, aThresh=%.3f, bThresh=%.3f, animate=%b, color=%b, sleep=%d, maximizer=%b\n", seed, maxIters, rows, cols, similarity, similarityMax, empty, aThresh, bThresh, animate, color, sleep, maximizer);
 
       Colors.enabled = color;
 
@@ -27,18 +29,25 @@ public class DoubleMain {
             if (randDbl > empty) {
                boolean a = rand.nextDouble() > aThresh;
                boolean b = rand.nextDouble() > bThresh;
-               DoubleAgent agent = new DoubleAgent(similarity, similarityMax, a, b);
+               DoubleAgent agent = new DoubleAgent(maximizer, similarity, similarityMax, a, b);
 
                board.addAgent(agent, new Point(r,c));
             }
          }
       }
       board.printState();
+      System.out.println(board.getNumEmpty());
+      if (animate) {
+         System.out.println();
+         board.printState();
+      }
       int epochs;
+      String moveUp = "\u001B["+rows+"A";
       for (epochs = 0; epochs < maxIters && board.performEpoch(); epochs++) {
          if (animate) {
-            System.out.println();
+            System.out.print(moveUp);
             board.printState();
+            Thread.sleep(sleep);
          }
       }
       if (!animate) {

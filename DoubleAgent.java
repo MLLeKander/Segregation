@@ -1,13 +1,13 @@
 public class DoubleAgent extends AbstractAgent<DoubleAgent> {
    public boolean colorA, colorB;
-   private final static MigrationStrategy<DoubleAgent> doubleStrategy = new MostSatisfied<DoubleAgent>();
-   //private final static MigrationStrategy<DoubleAgent> doubleStrategy = new CompositeStrategy<DoubleAgent>(
-   //      new ClosestSatisfied<DoubleAgent>(),
-   //      new MostSatisfied<DoubleAgent>()
-   //   );
+   private final static MigrationStrategy<DoubleAgent> maximizerStrategy = new MostSatisfied<DoubleAgent>();
+   private final static MigrationStrategy<DoubleAgent> satisficerStrategy = new CompositeStrategy<DoubleAgent>(
+         new ClosestSatisfied<DoubleAgent>(),
+         new MostSatisfied<DoubleAgent>()
+      );
 
-   public DoubleAgent(double similarityMin, double similarityMax, boolean colorA, boolean colorB) {
-      super(similarityMin, similarityMax, doubleStrategy);
+   public DoubleAgent(boolean maximiserStrat, double similarityMin, double similarityMax, boolean colorA, boolean colorB) {
+      super(similarityMin, similarityMax, maximiserStrat ? maximizerStrategy : satisficerStrategy);
       this.colorA = colorA;
       this.colorB = colorB;
    }
@@ -34,5 +34,9 @@ public class DoubleAgent extends AbstractAgent<DoubleAgent> {
          }
       }
       return similarCnt/(double)neighborCnt;
+   }
+
+   public String toString() {
+      return (colorA ? "{" : "<") + (colorB ? "}" : ">");
    }
 }
