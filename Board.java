@@ -41,6 +41,24 @@ public class Board<AgentType extends Agent<AgentType>> {
       return cells[p.r][p.c];
    }
 
+   public Point removeAgent(AgentType a) {
+      Point p = agentLookup.remove(a);
+      if (cells[p.r][p.c] != a) {
+         throw new IllegalStateException("???");
+      }
+      cells[p.r][p.c] = null;
+      return p;
+   }
+
+   public AgentType removeAgent(Point p) {
+      AgentType a = cells[p.r][p.c];
+      cells[p.r][p.c] = null;
+      if (!p.equals(agentLookup.remove(a))) {
+         throw new IllegalStateException("???");
+      }
+      return a;
+   }
+
    public int getNumAgents() {
       return agentCnt;
    }
@@ -79,10 +97,12 @@ public class Board<AgentType extends Agent<AgentType>> {
     *  Throws an IllegalArgumentException if to already contains an agent.
     */
    public void move(AgentType a, Point to) {
+      Point from = getPos(a);
+      if (from.equals(to)) return;
+
       if (cells[to.r][to.c] != null) {
          throw new IllegalArgumentException(String.format("Attempt to move to [%d,%d], which is not null.",to.r,to.c));
       }
-      Point from = getPos(a);
       cells[from.r][from.c] = null;
 
       cells[to.r][to.c] = a;

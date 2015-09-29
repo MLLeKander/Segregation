@@ -1,5 +1,6 @@
 public class MostSatisfied<AgentType extends AbstractAgent<AgentType>> implements MigrationStrategy<AgentType> {
-   public Point findPoint(Board<AgentType> board, AgentType agent) {
+   @Override
+   public Point findPoint(Board<AgentType> board, AgentType agent, Point start) {
       Point bound = board.getBoardSize();
       boolean[][] visited = new boolean[bound.r][bound.c];
       Point maxPoint = null;

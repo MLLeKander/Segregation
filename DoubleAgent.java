@@ -33,6 +33,7 @@ public class DoubleAgent extends AbstractAgent<DoubleAgent> {
             }
          }
       }
+      if (neighborCnt == 0) return 0;
       return similarCnt/(double)neighborCnt;
    }
 

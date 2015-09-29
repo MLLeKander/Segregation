@@ -14,7 +14,7 @@ all: Segregation.jar
 classes: $(FILES:.java=.class)
 
 Segregation.jar: classes
-	jar cfe Segregation.jar SchellingMain *.class
+	jar cfe Segregation.jar DoubleMain *.class
 
 clean:
 	rm *.class

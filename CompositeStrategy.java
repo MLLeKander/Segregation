@@ -7,9 +7,9 @@ public class CompositeStrategy<AgentType extends AbstractAgent<AgentType>> imple
       this.strats = strats;
    }
 
-   public Point findPoint(Board<AgentType> board, AgentType agent) {
+   public Point findPoint(Board<AgentType> board, AgentType agent, Point start) {
       for (MigrationStrategy<AgentType> strat : strats) {
-         Point p = strat.findPoint(board, agent);
+         Point p = strat.findPoint(board, agent, start);
          if (p != null) {
             return p;
          }

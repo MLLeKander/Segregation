@@ -1,10 +1,22 @@
 import java.util.*;
 
 public class ClosestSatisfied<AgentType extends AbstractAgent<AgentType>> implements MigrationStrategy<AgentType> {
-   public Point findPoint(Board<AgentType> board, AgentType agent) {
-      Point bound = board.getBoardSize(), start = board.getPos(agent);
+   boolean[][] visited = new boolean[1][1];
+
+   public void initVisited(Point bound) {
+      if (visited.length < bound.r || visited[0].length < bound.c) {
+         visited = new boolean[bound.r][bound.c];
+      }
+      for (boolean[] row : visited) {
+         Arrays.fill(row, false);
+      }
+   }
+
+   @Override
+   public Point findPoint(Board<AgentType> board, AgentType agent, Point start) {
+      Point bound = board.getBoardSize();
+      initVisited(bound);
       Queue<Point> queue = new LinkedList<Point>();
-      boolean[][] visited = new boolean[bound.r][bound.c];
       queue.offer(start);
       Point tmp = null;
       while (!queue.isEmpty()) {
