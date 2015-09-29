@@ -36,7 +36,6 @@ public abstract class AbstractAgent<AgentType extends AbstractAgent<AgentType>> 
       } else {
          out = interp_(similarity,similarityMin,similarityMax);
       }
-      //System.err.printf("in:%f out:%f sim:%f\n",similarity,out,similarityMin);
       return out;
    }
 

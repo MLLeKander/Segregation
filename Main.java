@@ -11,7 +11,7 @@ public class Main {
       boolean printAgents = args.getBool("printAgents", true);
       boolean printSimilarity = args.getBool("printSimilarity", true);
 
-      System.err.printf("Proceeding with maxIters=%d, animate=%b, sleep=%d, color=%b, printAgents=%b, printSimilarity=%b...\n", maxIters, animate, sleep, color, printAgents, printSimilarity); 
+      System.out.printf("Proceeding with maxIters=%d, animate=%b, sleep=%d, color=%b, printAgents=%b, printSimilarity=%b...\n", maxIters, animate, sleep, color, printAgents, printSimilarity); 
       Colors.enabled = color;
 
       String emptyAgent = emptyAgent(board);

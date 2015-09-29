@@ -3,7 +3,7 @@ import java.util.Arrays;
 
 public class BoardFactory {
    public static Board<? extends AbstractAgent> constructBoard(Arguments args) {
-      String agentType = args.get("agentType", "double");
+      String agentType = args.get("agentType", "double").toLowerCase();
       if (agentType.equals("schelling")) {
          return constructSchellingBoard(args);
       } else if (agentType.equals("double")) {
@@ -76,22 +76,30 @@ public class BoardFactory {
    }
 
    public static double[] getThreshes(Arguments args) {
-      double[] out = new double[args.getInt("features",5)];
-      Arrays.fill(out, args.getDbl("thresh", 0.5));
-      //TODO: Expose functionality to set individual threshes
+      double[] out;
+      if (args.hasArg("threshes")) {
+         String threshesStr = args.get("threshes");
+         String[] threshesStrs = threshesStr.split(":");
+         out = new double[threshesStrs.length];
+         for (int i = 0; i < threshesStrs.length; i++) {
+           out[i] = Double.parseDouble(threshesStrs[i]);
+         }
+      } else {
+         out = new double[args.getInt("numfeatures",5)];
+         Arrays.fill(out, args.getDbl("thresh", 0.5));
+      }
       return out;
    }
 
    private static String toString(double[] threshes) {
       StringBuilder sb = new StringBuilder();
-      sb.append('[');
       String sep="";
       for (double thresh : threshes) {
          sb.append(sep);
-         sep = ",";
+         sep = ":";
          sb.append(String.format("%.3f",thresh));
       }
-      return sb.append(']').toString();
+      return sb.toString();
    }
 
    public static Board<MultiAgent> constructMultiBoard(Arguments args) {
