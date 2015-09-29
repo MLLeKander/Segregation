@@ -2,10 +2,23 @@ public abstract class AbstractAgent<AgentType extends AbstractAgent<AgentType>> 
    protected MigrationStrategy<AgentType> strategy;
    private double similarityMin, similarityMax;
 
+   @SuppressWarnings("unchecked")
+   private final static MigrationStrategy maximizerStrategy = new MostSatisfied();
+   @SuppressWarnings("unchecked")
+   private final static MigrationStrategy satisficerStrategy = new CompositeStrategy(
+         new ClosestSatisfied(),
+         new MostSatisfied()
+      );
+
    public AbstractAgent(double similarityMin, double similarityMax, MigrationStrategy<AgentType> s) {
       this.similarityMin = similarityMin;
       this.similarityMax = similarityMax;
       this.strategy = s;
+   }
+
+   @SuppressWarnings("unchecked")
+   public AbstractAgent(double similarityMin, double similarityMax, boolean useMaximizer) {
+      this(similarityMin, similarityMax, useMaximizer ? maximizerStrategy : satisficerStrategy);
    }
 
    @SuppressWarnings("unchecked")
@@ -17,15 +30,29 @@ public abstract class AbstractAgent<AgentType extends AbstractAgent<AgentType>> 
       return satisfactionScoreAt(board, p) >= 0;
    }
 
-   public abstract double neighborSimilarityAt(Board<AgentType> board, Point p);
+   public double neighborSimilarityAt(Board<AgentType> board, Point p) {
+      Point bound = board.getBoardSize();
+      int neighborCnt = 0;
+      double similarScore = 0;
+      int row = p.r, col = p.c, brow = bound.r, bcol = bound.c;
 
-   public boolean isBounded(Board<AgentType> b, int r, int c) {
-      Point bound = b.getBoardSize();
-      return r >= 0 && r < bound.r && c >= 0 && c < bound.c;
+      for (int drow = -1; drow <= 1; drow++) {
+         for (int dcol = -1; dcol <= 1; dcol++) {
+            if (drow != 0 || dcol != 0) {
+               AgentType a = boundedGetAgent(board,row+drow,col+dcol);
+               if (a != null) {
+                  neighborCnt++;
+                  similarScore += similarityTo(a);
+               }
+            }
+         }
+      }
+      if (neighborCnt == 0) return 0;
+      return similarScore/neighborCnt;
    }
 
    public AgentType boundedGetAgent(Board<AgentType> b, int r, int c) {
-      return isBounded(b,r,c) ? b.getAgent(r,c) : null;
+      return b.isBounded(r,c) ? b.getAgent(r,c) : null;
    }
 
    public double satisfactionScoreAt(Board<AgentType> board, Point p) {

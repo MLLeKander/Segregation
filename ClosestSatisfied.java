@@ -22,7 +22,7 @@ public class ClosestSatisfied<AgentType extends AbstractAgent<AgentType>> implem
       while (!queue.isEmpty()) {
          Point curr = queue.remove();
          int row = curr.r, col = curr.c;
-         if (!agent.isBounded(board,row,col) || visited[row][col]) {
+         if (!board.isBounded(row,col) || visited[row][col]) {
             continue;
          }
          if (board.getAgent(curr) == null && agent.isSatisfiedAt(board, curr)) {

@@ -108,4 +108,8 @@ public class Board<AgentType extends Agent<AgentType>> {
       cells[to.r][to.c] = a;
       agentLookup.put(a, to);
    }
+
+   public boolean isBounded(int r, int c) {
+      return r >= 0 && r < boardSize.r && c >= 0 && c < boardSize.c;
+   }
 }
