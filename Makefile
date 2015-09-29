@@ -6,11 +6,8 @@ FILES = \
 		 Agent.java Board.java Point.java Arguments.java Colors.java \
 		 AbstractAgent.java \
 		 MigrationStrategy.java ClosestSatisfied.java CompositeStrategy.java MostSatisfied.java \
-		 SchellingAgent.java \
-		 DoubleAgent.java \
+		 SchellingAgent.java DoubleAgent.java MultiAgent.java \
 		 BoardFactory.java Main.java
- # DoubleBoard.java DoubleMain.java
- # SchellingBoard.java SchellingMain.java
 
 all: Segregation.jar
 

@@ -1,4 +1,5 @@
 import java.util.Random;
+import java.util.Arrays;
 
 public class BoardFactory {
    public static Board<? extends AbstractAgent> constructBoard(Arguments args) {
@@ -7,6 +8,8 @@ public class BoardFactory {
          return constructSchellingBoard(args);
       } else if (agentType.equals("double")) {
          return constructDoubleBoard(args);
+      } else if (agentType.equals("multi")) {
+         return constructMultiBoard(args);
       } else {
          throw new IllegalArgumentException("Unknown agent type: "+agentType);
       }
@@ -64,6 +67,57 @@ public class BoardFactory {
                boolean a = rand.nextDouble() > aThresh;
                boolean b = rand.nextDouble() > bThresh;
                DoubleAgent agent = new DoubleAgent(maximizer, similarity, similarityMax, a, b);
+
+               board.addAgent(agent, new Point(r,c));
+            }
+         }
+      }
+      return board;
+   }
+
+   public static double[] getThreshes(Arguments args) {
+      double[] out = new double[args.getInt("features",5)];
+      Arrays.fill(out, args.getDbl("thresh", 0.5));
+      //TODO: Expose functionality to set individual threshes
+      return out;
+   }
+
+   private static String toString(double[] threshes) {
+      StringBuilder sb = new StringBuilder();
+      sb.append('[');
+      String sep="";
+      for (double thresh : threshes) {
+         sb.append(sep);
+         sep = ",";
+         sb.append(String.format("%.3f",thresh));
+      }
+      return sb.append(']').toString();
+   }
+
+   public static Board<MultiAgent> constructMultiBoard(Arguments args) {
+      long seed = args.getLong("seed",1);
+      int rows = args.getInt("rows", 13);
+      int cols = args.getInt("cols", 16);
+      double similarity = args.getDbl("similarity",0.4);
+      double similarityMax = args.getDbl("similarityMax",1);
+      double empty = args.getDbl("empty", 0.2);
+      double[] threshes = getThreshes(args);
+      boolean maximizer = args.getBool("maximizer", false);
+      return constructMultiBoard(seed, rows, cols, similarity, similarityMax, empty, threshes, maximizer);
+   }
+
+   public static Board<MultiAgent> constructMultiBoard(long seed, int rows, int cols, double similarity, double similarityMax, double empty, double[] threshes, boolean maximizer) {
+      System.out.printf("Constructing a MultiAgent board with seed=%d, rows=%d, cols=%d, similarity=%.3f, similarityMax=%.3f, empty=%.3f, threshes=%s, maximizer=%b...\n", seed, rows, cols, similarity, similarityMax, empty, toString(threshes), maximizer);
+      Random rand = new Random(seed);
+      Board<MultiAgent> board = new Board<>(rows, cols);
+      for (int r = 0; r < rows; r++) {
+         for (int c = 0; c < cols; c++) {
+            if (rand.nextDouble() > empty) {
+               boolean[] features = new boolean[threshes.length];
+               for (int i = 0; i < threshes.length; i++) {
+                  features[i] = rand.nextDouble() > threshes[i];
+               }
+               MultiAgent agent = new MultiAgent(maximizer, similarity, similarityMax, features);
 
                board.addAgent(agent, new Point(r,c));
             }
