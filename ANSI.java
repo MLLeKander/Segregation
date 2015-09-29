@@ -1,4 +1,4 @@
-public class Colors {
+public class ANSI {
    public static boolean enabled = true;
 
    public static void reset() {
@@ -28,6 +28,12 @@ public class Colors {
    public static void green() {
       if (enabled) {
          System.out.print("\u001B[0;32m");
+      }
+   }
+
+   public static void moveUp(int lines) {
+      if (enabled) {
+         System.out.print("\u001B["+lines+"A");
       }
    }
 }

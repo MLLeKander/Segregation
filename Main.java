@@ -11,15 +11,14 @@ public class Main {
    public static <AType extends AbstractAgent<AType>> void performRun(Arguments args, Board<AType> board) throws InterruptedException {
       int maxIters = args.getInt("maxIters",100);
       boolean animate = args.getBool("animate", false);
-      boolean color = args.getBool("color", true);
+      boolean color = args.getBool("color", true) & args.getBool("ansi",true);
       long sleep = args.getLong("sleep", 0);
       boolean printAgents = args.getBool("printAgents", true);
       boolean printSimilarity = args.getBool("printSimilarity", true);
       boolean metrics = args.getBool("metrics", true);
 
       System.out.printf("Proceeding with maxIters=%d, animate=%b, sleep=%d, color=%b, printAgents=%b, printSimilarity=%b, metrics=%b...\n", maxIters, animate, sleep, color, printAgents, printSimilarity, metrics);
-      //TODO: Rename to ANSI
-      Colors.enabled = color;
+      ANSI.enabled = color;
 
       List<? extends Metric<AType>> metricList = Arrays.asList(new SimilarityMetric<AType>(), new ClusteringMetric<AType>());
 
@@ -30,6 +29,7 @@ public class Main {
       if (animate) {
          System.out.println("Epoch 0:");
          printState(board, printAgents, printSimilarity, emptyAgent);
+         System.out.println();
       }
       if (metrics) {
          for (Metric<AType> m : metricList) {
@@ -37,13 +37,13 @@ public class Main {
          }
       }
       int epochs;
-      //TODO: Move this to ANSI
-      String moveUp = "\u001B["+(board.getBoardSize().r+1)+"A";
+      int lines = board.getBoardSize().r+2;
       for (epochs = 0; epochs < maxIters && board.performEpoch(); epochs++) {
          if (animate) {
-            System.out.print(moveUp);
+            ANSI.moveUp(lines);
             System.out.printf("Epoch %d:\n",epochs+1);
             printState(board, printAgents, printSimilarity, emptyAgent);
+            System.out.println();
             if (sleep > 0) {
                Thread.sleep(sleep);
             }
@@ -55,7 +55,7 @@ public class Main {
          }
       }
       if (animate) {
-         System.out.print(moveUp);
+         ANSI.moveUp(lines);
       }
       System.out.println("Final board state:");
       printState(board, printAgents, printSimilarity, emptyAgent);
@@ -72,13 +72,13 @@ public class Main {
 
    public static void colorForScore(double score) {
       if (score < 0.25) {
-         Colors.lightRed();
+         ANSI.lightRed();
       } else if (score < 0.5) {
-         Colors.red();
+         ANSI.red();
       } else if (score < 0.85) {
-         Colors.green();
+         ANSI.green();
       } else {
-         Colors.lightGreen();
+         ANSI.lightGreen();
       }
    }
 
@@ -95,7 +95,7 @@ public class Main {
                if (a != null) {
                   colorForAgentAt(a, b, new Point(i,j));
                   System.out.print(a.toString());
-                  Colors.reset();
+                  ANSI.reset();
                } else {
                   System.out.print(emptyAgent);
                }
@@ -116,7 +116,7 @@ public class Main {
                   double score = 100*rawScore;
                   colorForScore(rawScore);
                   System.out.printf(" %3.0f",score);
-                  Colors.reset();
+                  ANSI.reset();
                }
             }
          }

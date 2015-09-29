@@ -3,7 +3,7 @@
 	javac $*.java
 
 FILES = \
-		 Agent.java Board.java Point.java Arguments.java Colors.java \
+		 Agent.java Board.java Point.java Arguments.java ANSI.java \
 		 AbstractAgent.java \
 		 MigrationStrategy.java ClosestSatisfied.java CompositeStrategy.java MostSatisfied.java \
 		 SchellingAgent.java DoubleAgent.java MultiAgent.java \
