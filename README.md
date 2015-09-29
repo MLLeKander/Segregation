@@ -26,6 +26,7 @@ Optional runtime parameters for `Main` are:
 - `--color` (boolean, default true): If true, the program prints in a colorized format.
 - `--printAgents` (boolean, default true): If true, the program prints a text representation of the agents.
 - `--printSimilarity` (boolean, default true): If true, the program prints the neighborhood similarity percentages of each agent.
+- `--metrics` (boolean, default true): If true, the program prints a set of metrics about the run.
 
 ### Schelling Agent
 
