@@ -1,13 +1,13 @@
 public class SchellingAgent extends AbstractAgent<SchellingAgent> {
    public boolean color;
-   //private final static MigrationStrategy<SchellingAgent> schellingStrategy = new MostSatisfied<SchellingAgent>();
-   private final static MigrationStrategy<SchellingAgent> schellingStrategy = new CompositeStrategy<SchellingAgent>(
+   private final static MigrationStrategy<SchellingAgent> maximizerStrategy = new MostSatisfied<SchellingAgent>();
+   private final static MigrationStrategy<SchellingAgent> satisficerStrategy = new CompositeStrategy<SchellingAgent>(
          new ClosestSatisfied<SchellingAgent>(),
          new MostSatisfied<SchellingAgent>()
       );
 
-   public SchellingAgent(double similarityMin, double similarityMax, boolean color) {
-      super(similarityMin, similarityMax, schellingStrategy);
+   public SchellingAgent(boolean maximiserStrat, double similarityMin, double similarityMax, boolean color) {
+      super(similarityMin, similarityMax, maximiserStrat ? maximizerStrategy : satisficerStrategy);
       this.color = color;
    }
 
@@ -30,5 +30,9 @@ public class SchellingAgent extends AbstractAgent<SchellingAgent> {
          }
       }
       return similarCnt/(double)neighborCnt;
+   }
+
+   public String toString() {
+      return color ? "#" : "O";
    }
 }

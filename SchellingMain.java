@@ -25,9 +25,9 @@ public class SchellingMain {
             double randDbl = rand.nextDouble();
             SchellingAgent a = null;
             if (randDbl < wThresh) {
-               a = new SchellingAgent(similarity, similarityMax, false);
+               a = new SchellingAgent(false, similarity, similarityMax, false);
             } else if (randDbl > 1-bThresh) {
-               a = new SchellingAgent(similarity, similarityMax, true);
+               a = new SchellingAgent(false, similarity, similarityMax, true);
             }
 
             if (a != null) {

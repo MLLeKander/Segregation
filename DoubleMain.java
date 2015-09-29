@@ -16,12 +16,13 @@ public class DoubleMain {
       boolean color = args.getBool("color", true);
       long sleep = args.getLong("sleep", 0);
       boolean maximizer = args.getBool("maximizer", false);
+      boolean printSimilarity = args.getBool("printSimilarity", true);
 
-      System.err.printf("Proceeding with seed=%d, maxIters=%d, rows=%d, cols=%d, similarity=%.3f, similarityMax=%.3f, empty=%.3f, aThresh=%.3f, bThresh=%.3f, animate=%b, color=%b, sleep=%d, maximizer=%b\n", seed, maxIters, rows, cols, similarity, similarityMax, empty, aThresh, bThresh, animate, color, sleep, maximizer);
+      System.err.printf("Proceeding with seed=%d, maxIters=%d, rows=%d, cols=%d, similarity=%.3f, similarityMax=%.3f, empty=%.3f, aThresh=%.3f, bThresh=%.3f, animate=%b, color=%b, sleep=%d, maximizer=%b, printSimilarity=%b\n", seed, maxIters, rows, cols, similarity, similarityMax, empty, aThresh, bThresh, animate, color, sleep, maximizer, printSimilarity);
 
       Colors.enabled = color;
 
-      DoubleBoard board = new DoubleBoard(rows, cols);
+      DoubleBoard board = new DoubleBoard(rows, cols, printSimilarity);
       Random rand = new Random(seed);
       for (int r = 0; r < rows; r++) {
          for (int c = 0; c < cols; c++) {

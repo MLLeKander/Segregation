@@ -80,7 +80,7 @@ public class Board<AgentType extends Agent<AgentType>> {
       ArrayList<AgentType> unsatisfieds = new ArrayList<AgentType>();
       for (AgentType[] row : cells) {
          for (AgentType a : row) {
-            if (a != null && !(a).isSatisfied(this)) {
+            if (a != null && !a.isSatisfied(this)) {
                unsatisfieds.add(a);
             }
          }

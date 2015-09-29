@@ -1,7 +1,10 @@
 
 public class DoubleBoard extends Board<DoubleAgent> {
-   public DoubleBoard(int r, int c) {
+   boolean printSimilarity;
+
+   public DoubleBoard(int r, int c, boolean printSimilarity) {
       super(r,c);
+      this.printSimilarity = printSimilarity;
    }
 
    public void colorForScore(double score) {
@@ -35,16 +38,18 @@ public class DoubleBoard extends Board<DoubleAgent> {
             System.out.print(s);
             Colors.reset();
          }
-         System.out.print("   ");
-         for (int j = 0; j < boardSize.c; j++) {
-            DoubleAgent a = getAgent(i,j);
-            if (a == null) {
-               System.out.print("    ");
-            } else {
-               double rawScore = a.neighborSimilarityAt(this,new Point(i,j));
-               double score = 100*rawScore;
-               colorForScore(rawScore);
-               System.out.printf(" %3.0f",score);
+         if (printSimilarity) {
+            System.out.print("   ");
+            for (int j = 0; j < boardSize.c; j++) {
+               DoubleAgent a = getAgent(i,j);
+               if (a == null) {
+                  System.out.print("    ");
+               } else {
+                  double rawScore = a.neighborSimilarityAt(this,new Point(i,j));
+                  double score = 100*rawScore;
+                  colorForScore(rawScore);
+                  System.out.printf(" %3.0f",score);
+               }
             }
          }
          Colors.reset();
