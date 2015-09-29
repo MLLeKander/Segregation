@@ -28,7 +28,7 @@ public class MultiAgent extends AbstractAgent<MultiAgent> {
       StringBuilder sb = new StringBuilder();
       sb.append('{');
       for (boolean feature : features) {
-         sb.append(feature ? 'O' : '*');
+         sb.append(feature ? '#' : 'O');
       }
       return sb.append('}').toString();
    }

@@ -1,18 +1,27 @@
+import java.util.*;
+
 public class Main {
    @SuppressWarnings("unchecked")
-   public static void main(String[] argArr) throws Exception {
+   public static void main(String[] argArr) throws InterruptedException {
       Arguments args = new Arguments(argArr);
       Board<? extends AbstractAgent> board = BoardFactory.constructBoard(args);
+      performRun(args, board);
+   }
 
+   public static <AType extends AbstractAgent<AType>> void performRun(Arguments args, Board<AType> board) throws InterruptedException {
       int maxIters = args.getInt("maxIters",100);
       boolean animate = args.getBool("animate", false);
       boolean color = args.getBool("color", true);
       long sleep = args.getLong("sleep", 0);
       boolean printAgents = args.getBool("printAgents", true);
       boolean printSimilarity = args.getBool("printSimilarity", true);
+      boolean metrics = args.getBool("metrics", true);
 
-      System.out.printf("Proceeding with maxIters=%d, animate=%b, sleep=%d, color=%b, printAgents=%b, printSimilarity=%b...\n", maxIters, animate, sleep, color, printAgents, printSimilarity); 
+      System.out.printf("Proceeding with maxIters=%d, animate=%b, sleep=%d, color=%b, printAgents=%b, printSimilarity=%b, metrics=%b...\n", maxIters, animate, sleep, color, printAgents, printSimilarity, metrics);
+      //TODO: Rename to ANSI
       Colors.enabled = color;
+
+      List<? extends Metric<AType>> metricList = Arrays.asList(new SimilarityMetric<AType>(), new ClusteringMetric<AType>());
 
       String emptyAgent = emptyAgent(board);
       System.out.println("Initial board state:");
@@ -22,7 +31,13 @@ public class Main {
          System.out.println("Epoch 0:");
          printState(board, printAgents, printSimilarity, emptyAgent);
       }
+      if (metrics) {
+         for (Metric<AType> m : metricList) {
+            m.observe(board);
+         }
+      }
       int epochs;
+      //TODO: Move this to ANSI
       String moveUp = "\u001B["+(board.getBoardSize().r+1)+"A";
       for (epochs = 0; epochs < maxIters && board.performEpoch(); epochs++) {
          if (animate) {
@@ -33,6 +48,11 @@ public class Main {
                Thread.sleep(sleep);
             }
          }
+         if (metrics) {
+            for (Metric<AType> m : metricList) {
+               m.observe(board);
+            }
+         }
       }
       if (animate) {
          System.out.print(moveUp);
@@ -41,6 +61,13 @@ public class Main {
       printState(board, printAgents, printSimilarity, emptyAgent);
       System.out.println();
       System.out.printf("Completed in %d epochs.\n", epochs);
+
+      if (metrics) {
+         System.out.println("\nMetrics");
+         for (Metric<AType> m : metricList) {
+            System.out.println(m.repr());
+         }
+      }
    }
 
    public static void colorForScore(double score) {
