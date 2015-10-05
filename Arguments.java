@@ -108,4 +108,8 @@ public class Arguments {
          return getDefault()+" "+argStr;
       }
    }
+
+   public String put(String key, String val) {
+      return argMap.put(keyLiteral(key), val);
+   }
 }

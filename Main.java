@@ -4,42 +4,55 @@ public class Main {
    @SuppressWarnings("unchecked")
    public static void main(String[] argArr) throws InterruptedException {
       Arguments args = new Arguments(argArr);
-      Board<? extends AbstractAgent> board = BoardFactory.constructBoard(args);
-      performRun(args, board);
+      if (args.getBool("batch", false)) {
+         args.put("headless", "true");
+         for (int i = args.getInt("batchMin",0); i < args.getInt("batchMax"); i++) {
+            args.put("seed", i+"");
+            Board<? extends AbstractAgent> board = BoardFactory.constructBoard(args);
+            performRun(args, board);
+         }
+      } else {
+         Board<? extends AbstractAgent> board = BoardFactory.constructBoard(args);
+         performRun(args, board);
+      }
    }
 
    public static <AType extends AbstractAgent<AType>> void performRun(Arguments args, Board<AType> board) throws InterruptedException {
       int maxIters = args.getInt("maxIters",100);
-      boolean animate = args.getBool("animate", false);
       boolean color = args.getBool("color", true) & args.getBool("ansi",true);
       long sleep = args.getLong("sleep", 0);
       boolean printAgents = args.getBool("printAgents", true);
       boolean printSimilarity = args.getBool("printSimilarity", true);
       boolean metrics = args.getBool("metrics", true);
+      boolean headless = args.getBool("headless", false);
+      boolean animate = args.getBool("animate", false);
 
-      System.out.printf("Proceeding with maxIters=%d, animate=%b, sleep=%d, color=%b, printAgents=%b, printSimilarity=%b, metrics=%b...\n", maxIters, animate, sleep, color, printAgents, printSimilarity, metrics);
+      System.out.printf("Proceeding with maxIters=%d, animate=%b, sleep=%d, color=%b, printAgents=%b, printSimilarity=%b, metrics=%b, headless=%b...\n", maxIters, animate, sleep, color, printAgents, printSimilarity, metrics, headless);
       ANSI.enabled = color;
 
-      List<? extends Metric<AType>> metricList = Arrays.asList(new SimilarityMetric<AType>(), new ClusteringMetric<AType>());
+      List<? extends Metric<AType>> beforeMetrics = Arrays.asList(new SimilarityMetric<AType>(), new ClusteringMetric<AType>());
+      List<? extends Metric<AType>> afterMetrics = Arrays.asList(new SimilarityMetric<AType>(), new ClusteringMetric<AType>());
 
       String emptyAgent = emptyAgent(board);
-      System.out.println("Initial board state:");
-      printState(board, printAgents, printSimilarity, emptyAgent);
-      System.out.println();
-      if (animate) {
-         System.out.println("Epoch 0:");
+      if (!headless) {
+         System.out.println("Initial board state:");
          printState(board, printAgents, printSimilarity, emptyAgent);
          System.out.println();
+         if (animate) {
+            System.out.println("Epoch 0:");
+            printState(board, printAgents, printSimilarity, emptyAgent);
+            System.out.println();
+         }
       }
       if (metrics) {
-         for (Metric<AType> m : metricList) {
+         for (Metric<AType> m : beforeMetrics) {
             m.observe(board);
          }
       }
       int epochs;
       int lines = board.getBoardSize().r+2;
       for (epochs = 0; epochs < maxIters && board.performEpoch(); epochs++) {
-         if (animate) {
+         if (!headless && animate) {
             ANSI.moveUp(lines);
             System.out.printf("Epoch %d:\n",epochs+1);
             printState(board, printAgents, printSimilarity, emptyAgent);
@@ -48,24 +61,25 @@ public class Main {
                Thread.sleep(sleep);
             }
          }
-         if (metrics) {
-            for (Metric<AType> m : metricList) {
-               m.observe(board);
-            }
+      }
+      if (!headless) {
+         if (animate) {
+            ANSI.moveUp(lines);
          }
+         System.out.println("Final board state:");
+         printState(board, printAgents, printSimilarity, emptyAgent);
+         System.out.println();
       }
-      if (animate) {
-         ANSI.moveUp(lines);
-      }
-      System.out.println("Final board state:");
-      printState(board, printAgents, printSimilarity, emptyAgent);
-      System.out.println();
       System.out.printf("Completed in %d epochs.\n", epochs);
 
       if (metrics) {
+         for (Metric<AType> m : afterMetrics) {
+            m.observe(board);
+         }
          System.out.println("\nMetrics");
-         for (Metric<AType> m : metricList) {
-            System.out.println(m.repr());
+         for (int i = 0; i < beforeMetrics.size(); i++) {
+            System.out.println("before"+beforeMetrics.get(i).repr());
+            System.out.println("after"+afterMetrics.get(i).repr());
          }
       }
    }
