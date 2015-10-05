@@ -32,4 +32,15 @@ public class MultiAgent extends AbstractAgent<MultiAgent> {
       }
       return sb.append('}').toString();
    }
+
+   @Override
+   public int numFeatures() { return numFeatures; }
+
+   @Override
+   public double compareFeature(MultiAgent that, int featureNdx) {
+      if (this.numFeatures != that.numFeatures) {
+         throw new IllegalStateException("???");
+      }
+      return this.features[featureNdx] == that.features[featureNdx] ? 1 : 0;
+   }
 }

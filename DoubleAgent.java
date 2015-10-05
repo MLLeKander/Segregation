@@ -15,12 +15,21 @@ public class DoubleAgent extends AbstractAgent<DoubleAgent> {
    @Override
    public double similarityTo(DoubleAgent that) {
       int count = 0;
-      if (that.colorA == this.colorA) {
+      if (this.colorA == that.colorA) {
          count++;
       }
-      if (that.colorB == this.colorB) {
+      if (this.colorB == that.colorB) {
          count++;
       }
       return count/2.;
+   }
+
+   @Override
+   public int numFeatures() { return 2; }
+
+   @Override
+   public double compareFeature(DoubleAgent that, int featureNdx) {
+      boolean tmp = featureNdx == 0 ? this.colorA == that.colorA : this.colorB == that.colorB;
+      return tmp ? 1 : 0;
    }
 }
