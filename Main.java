@@ -1,38 +1,54 @@
 import java.util.*;
+import java.io.*;
 
 public class Main {
+   public static <AType extends AbstractAgent<AType>> void initOut(PrintStream out, List<? extends Metric<AType>> metrics) {
+      out.print("numFeatures\tseed\tsimilarity\temptiness\trows\tcols\tstrat\tthreshes\tnumEpochs");
+      for (Metric<AType> m : metrics) {
+         out.print("\tbefore"+m.name());
+      }
+      for (Metric<AType> m : metrics) {
+         out.print("\tafter"+m.name());
+      }
+      out.println();
+   }
+
    @SuppressWarnings("unchecked")
-   public static void main(String[] argArr) throws InterruptedException {
+   public static void main(String[] argArr) throws InterruptedException, FileNotFoundException {
       Arguments args = new Arguments(argArr);
+      List<Metric<?>> metrics = Arrays.<Metric<?>>asList(new SimilarityMetric(), new ClusteringMetric(true), new ClusteringMetric(false));
+      List metrics_ = metrics;
+
       if (args.getBool("batch", false)) {
+         PrintStream out = new PrintStream(new File(args.get("outFile")));
+         initOut(out, metrics_);
          args.put("headless", "true");
+         args.put("metrics", "true");
          for (int i = args.getInt("batchMin",0); i < args.getInt("batchMax"); i++) {
             args.put("seed", i+"");
-            Board<? extends AbstractAgent> board = BoardFactory.constructBoard(args);
-            performRun(args, board);
+            Board<? extends AbstractAgent> board = BoardFactory.constructBoard(args, out);
+            performRun(args, board, metrics_, out);
          }
       } else {
-         Board<? extends AbstractAgent> board = BoardFactory.constructBoard(args);
-         performRun(args, board);
+         Board<? extends AbstractAgent> board = BoardFactory.constructBoard(args, null);
+         performRun(args, board, metrics_, System.out);
       }
    }
 
-   public static <AType extends AbstractAgent<AType>> void performRun(Arguments args, Board<AType> board) throws InterruptedException {
+   public static <AType extends AbstractAgent<AType>> void performRun(Arguments args, Board<AType> board, List<? extends Metric<AType>> metricList, PrintStream out) throws InterruptedException {
       int maxIters = args.getInt("maxIters",100);
       boolean color = args.getBool("color", true) & args.getBool("ansi",true);
       long sleep = args.getLong("sleep", 0);
       boolean printAgents = args.getBool("printAgents", true);
       boolean printSimilarity = args.getBool("printSimilarity", true);
-      boolean metrics = args.getBool("metrics", true);
+      boolean metrics = args.getBool("metrics", false);
       boolean headless = args.getBool("headless", false);
       boolean animate = args.getBool("animate", false);
 
       System.out.printf("Proceeding with maxIters=%d, animate=%b, sleep=%d, color=%b, printAgents=%b, printSimilarity=%b, metrics=%b, headless=%b...\n", maxIters, animate, sleep, color, printAgents, printSimilarity, metrics, headless);
       ANSI.enabled = color;
 
-      List<? extends Metric<AType>> beforeMetrics = Arrays.asList(new SimilarityMetric<AType>(), new ClusteringMetric<AType>());
-      List<? extends Metric<AType>> afterMetrics = Arrays.asList(new SimilarityMetric<AType>(), new ClusteringMetric<AType>());
-
+      StringBuffer metricsBuffer = new StringBuffer();
       String emptyAgent = emptyAgent(board);
       if (!headless) {
          System.out.println("Initial board state:");
@@ -45,8 +61,9 @@ public class Main {
          }
       }
       if (metrics) {
-         for (Metric<AType> m : beforeMetrics) {
+         for (Metric<AType> m : metricList) {
             m.observe(board);
+            metricsBuffer.append('\t').append(m.repr());
          }
       }
       int epochs;
@@ -73,23 +90,21 @@ public class Main {
       System.out.printf("Completed in %d epochs.\n", epochs);
 
       if (metrics) {
-         for (Metric<AType> m : afterMetrics) {
+         out.printf("\t%d", epochs);
+         for (Metric<AType> m : metricList) {
             m.observe(board);
+            metricsBuffer.append('\t').append(m.repr());
          }
-         System.out.println("\nMetrics");
-         for (int i = 0; i < beforeMetrics.size(); i++) {
-            System.out.println("before"+beforeMetrics.get(i).repr());
-            System.out.println("after"+afterMetrics.get(i).repr());
-         }
+         out.println(metricsBuffer);
       }
    }
 
    public static void colorForScore(double score) {
-      if (score < 0.25) {
+      if (score < 0.5) {
          ANSI.lightRed();
-      } else if (score < 0.5) {
+      } else if (score < 0) {
          ANSI.red();
-      } else if (score < 0.85) {
+      } else if (score < 0.5) {
          ANSI.green();
       } else {
          ANSI.lightGreen();
@@ -97,7 +112,7 @@ public class Main {
    }
 
    public static <AType extends AbstractAgent<AType>> void colorForAgentAt(AType a, Board<AType> b, Point p) {
-      colorForScore(a.neighborSimilarityAt(b,p));
+      colorForScore(a.satisfactionScoreAt(b,p));
    }
 
    public static <AType extends AbstractAgent<AType>> void printState(Board<AType> b, boolean printAgents, boolean printSimilarity, String emptyAgent) {
@@ -126,9 +141,10 @@ public class Main {
                if (a == null) {
                   System.out.print("    ");
                } else {
-                  double rawScore = a.neighborSimilarityAt(b,new Point(i,j));
+                  Point p = new Point(i,j);
+                  double rawScore = a.neighborSimilarityAt(b,p);
                   double score = 100*rawScore;
-                  colorForScore(rawScore);
+                  colorForAgentAt(a, b, p);
                   System.out.printf(" %3.0f",score);
                   ANSI.reset();
                }

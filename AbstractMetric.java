@@ -1,8 +1,8 @@
-import java.util.ArrayList;
+import java.util.*;
 
-public abstract class AbstractMetric<AType extends Agent<AType>> implements Metric<AType> {
+public abstract class AbstractMetric<AType extends Agent<AType>, LType extends Comparable<LType>> implements Metric<AType> {
    public String name;
-   public ArrayList<ArrayList<?>> log = new ArrayList<>();
+   public ArrayList<LType> log = new ArrayList<>();
 
    public AbstractMetric(String name) {
       this.name = name;
@@ -10,17 +10,13 @@ public abstract class AbstractMetric<AType extends Agent<AType>> implements Metr
 
    @Override
    public String repr() {
-      StringBuilder sb = new StringBuilder(name+":");
-      String sep1 = "", sep2 = "";
-      for (ArrayList<?> row : log) {
-         sb.append(sep1);
-         sep1 = ":";
-         sep2 = "";
-         for (Object i : row) {
-            sb.append(sep2);
-            sep2 = ",";
-            sb.append(format(i));
-         }
+      Collections.sort(log);
+      StringBuilder sb = new StringBuilder();
+      String sep = "";
+      for (LType i : log) {
+         sb.append(sep);
+         sep = ",";
+         sb.append(format(i));
       }
       return sb.toString();
    }
@@ -28,4 +24,7 @@ public abstract class AbstractMetric<AType extends Agent<AType>> implements Metr
    protected String format(Object dataObj) {
       return dataObj.toString();
    }
+
+   @Override
+   public String name() { return name; }
 }

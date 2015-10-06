@@ -1,28 +1,32 @@
 import java.util.*;
 
-public class ClusteringMetric<AType extends Agent<AType>> extends AbstractMetric<AType> {
+public class ClusteringMetric<AType extends Agent<AType>> extends AbstractMetric<AType, Integer> {
    boolean[][] visited = new boolean[1][1];
+   boolean useMooreNeighborhood;
 
    public ClusteringMetric() {
-      super("Clustering");
+      this(true);
+   }
+
+   public ClusteringMetric(boolean useMooreNeighborhood) {
+      super((useMooreNeighborhood ? "Moore" : "Neumann")+"Clustering");
+      this.useMooreNeighborhood = useMooreNeighborhood;
    }
 
    @Override
    public void observe(Board<AType> board) {
       Point bound = board.getBoardSize();
       initVisited(bound);
+      log.clear();
 
-      ArrayList<Integer> thisLog = new ArrayList<>();
       for (int r = 0; r < bound.r; r++) {
          for (int c = 0; c < bound.c; c++) {
             AType a = board.getAgent(r, c);
             if (a != null && !visited[r][c]) {
-               thisLog.add(floodFill(board, bound, new Point(r,c), a));
+               log.add(floodFill(board, bound, new Point(r,c), a));
             }
          }
       }
-      Collections.sort(thisLog);
-      log.add(thisLog);
    }
 
    public void initVisited(Point bound) {
@@ -54,11 +58,18 @@ public class ClusteringMetric<AType extends Agent<AType>> extends AbstractMetric
          count++;
          visited[row][col] = true;
 
-         for (int drow = -1; drow <= 1; drow++) {
-            for (int dcol = -1; dcol <= 1; dcol++) {
-               if (drow != 0 || dcol != 0) {
-                  stack.add(new Point(row+drow,col+dcol));
+         if (useMooreNeighborhood) {
+            for (int drow = -1; drow <= 1; drow++) {
+               for (int dcol = -1; dcol <= 1; dcol++) {
+                  if (drow != 0 || dcol != 0) {
+                     stack.add(new Point(row+drow,col+dcol));
+                  }
                }
+            }
+         } else {
+            for (int d = -1; d <= 1; d+=2) {
+               stack.add(new Point(row+d,col));
+               stack.add(new Point(row,col+d));
             }
          }
       }

@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class SimilarityMetric<AType extends AbstractAgent<AType>> extends AbstractMetric<AType> {
+public class SimilarityMetric<AType extends AbstractAgent<AType>> extends AbstractMetric<AType, Double> {
    public SimilarityMetric() {
       super("Similarity");
    }
@@ -8,18 +8,16 @@ public class SimilarityMetric<AType extends AbstractAgent<AType>> extends Abstra
    @Override
    public void observe(Board<AType> board) {
       Point bound = board.getBoardSize();
+      log.clear();
 
-      ArrayList<Double> thisLog = new ArrayList<>();
       for (int r = 0; r < bound.r; r++) {
          for (int c = 0; c < bound.c; c++) {
             AType a = board.getAgent(r, c);
             if (a != null) {
-               thisLog.add(a.neighborSimilarityAt(board,new Point(r,c)));
+               log.add(a.neighborSimilarityAt(board,new Point(r,c)));
             }
          }
       }
-      Collections.sort(thisLog);
-      log.add(thisLog);
    }
 
    public String format(Object o) {
