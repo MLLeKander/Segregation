@@ -100,11 +100,11 @@ public class Main {
    }
 
    public static void colorForScore(double score) {
-      if (score < 0.5) {
+      if (score < 0.25) {
          ANSI.lightRed();
-      } else if (score < 0) {
-         ANSI.red();
       } else if (score < 0.5) {
+         ANSI.red();
+      } else if (score < 0.75) {
          ANSI.green();
       } else {
          ANSI.lightGreen();
@@ -112,7 +112,7 @@ public class Main {
    }
 
    public static <AType extends AbstractAgent<AType>> void colorForAgentAt(AType a, Board<AType> b, Point p) {
-      colorForScore(a.satisfactionScoreAt(b,p));
+      colorForScore(a.neighborSimilarityAt(b,p));
    }
 
    public static <AType extends AbstractAgent<AType>> void printState(Board<AType> b, boolean printAgents, boolean printSimilarity, String emptyAgent) {

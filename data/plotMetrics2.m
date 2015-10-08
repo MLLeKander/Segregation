@@ -28,6 +28,18 @@ function plotMetrics(data, postfix)
         legend('Initial','Final');
         drawnow;
         print(sprintf('%s%s.png',fileBase,postfix),'-dpng');
+
+        if ~ishandle(figureNum+5)
+            figure(figureNum+5)
+        end
+        set(0, 'CurrentFigure', figureNum+5);
+        clf
+        histogram(tmp2-tmp1);
+        title(sprintf('%s\n(features=%d, emptiness=%.0d%%, %dx%d, %s, %d runs)',heading,numFeatures,emptiness*100,cols,rows,strat, length(tmp1)));
+        xlabel('After - Before');
+        ylabel('Counts');
+        drawnow;
+        print(sprintf('%s%s_diff.png',fileBase,postfix),'-dpng');
     end
     if isstr(data)
         s = readTSV(data);
