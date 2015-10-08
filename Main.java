@@ -22,8 +22,8 @@ public class Main {
       if (args.getBool("batch", false)) {
          PrintStream out = new PrintStream(new File(args.get("outFile")));
          initOut(out, metrics_);
-         args.put("headless", "true");
-         args.put("metrics", "true");
+         args.put("headless", args.get("headless","true"));
+         args.put("metrics", args.get("metrics","true"));
          for (int i = args.getInt("batchMin",0); i < args.getInt("batchMax"); i++) {
             args.put("seed", i+"");
             Board<? extends AbstractAgent> board = BoardFactory.constructBoard(args, out);
