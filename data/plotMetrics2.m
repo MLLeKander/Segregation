@@ -1,5 +1,5 @@
 function plotMetrics(data, postfix)
-    function plotHist(func1, func2, transform, heading, fileBase, figureNum)
+    function [h1, h2] = plotHist(func1, func2, transform, heading, fileBase, figureNum)
         if ~ishandle(figureNum)
             figure(figureNum)
         end
@@ -7,14 +7,20 @@ function plotMetrics(data, postfix)
         clf;
         tmp1 = arrayfun(@(x) transform(func1(x)), s);
         tmp2 = arrayfun(@(x) transform(func2(x)), s);
-        dataMin = min([tmp1 tmp2]);
-        dataMax = max([tmp1 tmp2]);
-        edges = linspace(dataMin,dataMax,100);
-        cnts1 = histc(tmp1, edges);
-        cnts2 = histc(tmp2, edges);
-        bar(edges,cnts1,'FaceColor', 'r');
+        h1 = histogram(tmp1);
         hold on;
-        bar(edges,cnts2,'FaceColor', 'b');
+        h2 = histogram(tmp2);
+        newWidth = mean([h1.BinWidth h2.BinWidth]);
+        h1.BinWidth = newWidth;
+        h2.BinWidth = newWidth;
+        %dataMin = min([tmp1 tmp2]);
+        %dataMax = max([tmp1 tmp2]);
+        %edges = linspace(dataMin,dataMax,100);
+        %cnts1 = histc(tmp1, edges);
+        %cnts2 = histc(tmp2, edges);
+        %bar(edges,cnts1,'FaceColor', 'r');
+        %hold on;
+        %bar(edges,cnts2,'FaceColor', 'b');
 
         xlabel(heading);
         ylabel('Counts');
@@ -39,9 +45,15 @@ function plotMetrics(data, postfix)
         postfix = sprintf('_%d_%.0d_%dx%d_%s',numFeatures, emptiness*100, cols, rows, strat(1));
     end
     
-    plotHist(@(x)(x.beforeSimilarity), @(x)(x.afterSimilarity), @mean, 'Average Agent Similarity Score', 'Similarity', 1);
-    plotHist(@(x)(x.beforeMooreClustering), @(x)(x.afterMooreClustering), @mean, 'Average Moore Cluster Size', 'Moore', 2);
-    plotHist(@(x)(x.beforeMooreClustering), @(x)(x.afterMooreClustering), @length, 'Number of Moore Clusters', 'MooreCnt', 3);
-    plotHist(@(x)(x.beforeNeumannClustering), @(x)(x.afterNeumannClustering), @mean, 'Average von Neumann Cluster Size', 'Neumann', 4);
-    plotHist(@(x)(x.beforeNeumannClustering), @(x)(x.afterNeumannClustering), @length, 'Number of von Neumann Clusters', 'NeumannCnt', 5);
+    [h1,h2] = plotHist(@(x)(x.beforeSimilarity), @(x)(x.afterSimilarity), @mean, 'Average Agent Similarity Score', 'Similarity', 1);
+
+    [h1,h2] = plotHist(@(x)(x.beforeMooreClustering), @(x)(x.afterMooreClustering), @mean, 'Average Moore Cluster Size', 'Moore', 2);
+    [h1,h2] = plotHist(@(x)(x.beforeMooreClustering), @(x)(x.afterMooreClustering), @length, 'Number of Moore Clusters', 'MooreCnt', 3);
+    h1.BinWidth = 1;
+    h2.BinWidth = 1;
+
+    [h1,h2] = plotHist(@(x)(x.beforeNeumannClustering), @(x)(x.afterNeumannClustering), @mean, 'Average von Neumann Cluster Size', 'Neumann', 4);
+    [h1,h2] = plotHist(@(x)(x.beforeNeumannClustering), @(x)(x.afterNeumannClustering), @length, 'Number of von Neumann Clusters', 'NeumannCnt', 5);
+    h1.BinWidth = 1;
+    h2.BinWidth = 1;
 end
