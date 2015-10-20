@@ -1,15 +1,15 @@
 import java.util.*;
 
-public class ClusteringMetric<AType extends Agent<AType>> extends AbstractMetric<AType, Integer> {
+public class SingleFeatureClusteringMetric<AType extends Agent<AType>> extends AbstractMetric<AType, Integer> {
    boolean[][] visited = new boolean[1][1];
    boolean useMooreNeighborhood;
 
-   public ClusteringMetric() {
+   public SingleFeatureClusteringMetric() {
       this(true);
    }
 
-   public ClusteringMetric(boolean useMooreNeighborhood) {
-      super((useMooreNeighborhood ? "Moore" : "Neumann")+"Clustering");
+   public SingleFeatureClusteringMetric(boolean useMooreNeighborhood) {
+      super("SingleFeature"+(useMooreNeighborhood ? "Moore" : "Neumann")+"Clustering");
       this.useMooreNeighborhood = useMooreNeighborhood;
    }
 
@@ -54,7 +54,7 @@ public class ClusteringMetric<AType extends Agent<AType>> extends AbstractMetric
          }
 
          AType tmpAgent = board.getAgent(curr);
-         if (tmpAgent == null || Math.abs(tmpAgent.similarityTo(a) - 1) > 1e-10) {
+         if (tmpAgent == null || Math.abs(tmpAgent.compareFeature(a, 0) - 1) > 1e-10) {
             continue;
          }
 

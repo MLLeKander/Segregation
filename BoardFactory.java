@@ -21,12 +21,13 @@ public class BoardFactory {
          return;
       }
       String stratName = maximizer ? "maximizer" : "satisficer";
-      out.printf("%d\t%d\t%.3f\t%.3f\t%d\t%d\t%s\t",numFeatures,seed,similarity,empty,rows,cols,stratName);
-      String sep = "";
-      for (double d : threshes) {
-         out.printf("%s%.3f",sep,d);
-         sep = ",";
-      }
+      out.printf("%d\t%d\t%.3f\t%.3f\t%d\t%d\t%s",numFeatures,seed,similarity,empty,rows,cols,stratName);
+      //out.printf("%d\t%d\t%.3f\t%.3f\t%d\t%d\t%s\t",numFeatures,seed,similarity,empty,rows,cols,stratName);
+      //String sep = "";
+      //for (double d : threshes) {
+      //   out.printf("%s%.3f",sep,d);
+      //   sep = ",";
+      //}
    }
 
    public static Board<SchellingAgent> constructSchellingBoard(Arguments args, PrintStream out) {

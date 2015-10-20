@@ -3,7 +3,8 @@ import java.io.*;
 
 public class Main {
    public static <AType extends AbstractAgent<AType>> void initOut(PrintStream out, List<? extends Metric<AType>> metrics) {
-      out.print("numFeatures\tseed\tsimilarity\temptiness\trows\tcols\tstrat\tthreshes\tnumEpochs");
+      //out.print("numFeatures\tseed\tsimilarity\temptiness\trows\tcols\tstrat\tthreshes\tnumEpochs");
+      out.print("numFeatures\tseed\tsimilarity\temptiness\trows\tcols\tstrat\tnumEpochs");
       for (Metric<AType> m : metrics) {
          out.print("\tbefore"+m.name());
       }
@@ -16,7 +17,7 @@ public class Main {
    @SuppressWarnings("unchecked")
    public static void main(String[] argArr) throws InterruptedException, FileNotFoundException {
       Arguments args = new Arguments(argArr);
-      List<Metric<?>> metrics = Arrays.<Metric<?>>asList(new SimilarityMetric(), new ClusteringMetric(true), new ClusteringMetric(false));
+      List<Metric<?>> metrics = Arrays.<Metric<?>>asList(new SimilarityMetric(), new ClusteringMetric(true), new ClusteringMetric(false), new SingleFeatureClusteringMetric(true), new SingleFeatureClusteringMetric(false));
       List metrics_ = metrics;
 
       if (args.getBool("batch", false)) {

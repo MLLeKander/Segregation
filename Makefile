@@ -8,7 +8,7 @@ FILES = \
 		 MigrationStrategy.java ClosestSatisfied.java CompositeStrategy.java MostSatisfied.java \
 		 SchellingAgent.java DoubleAgent.java MultiAgent.java \
 		 BoardFactory.java Main.java \
-		 Metric.java AbstractMetric.java SimilarityMetric.java ClusteringMetric.java \
+		 Metric.java AbstractMetric.java SimilarityMetric.java ClusteringMetric.java SingleFeatureClusteringMetric.java \
 		 NeighborhoodVisitor.java
 
 all: Segregation.jar
