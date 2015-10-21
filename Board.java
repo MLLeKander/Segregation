@@ -47,6 +47,7 @@ public class Board<AgentType extends Agent<AgentType>> {
          throw new IllegalStateException("???");
       }
       cells[p.r][p.c] = null;
+      agentCnt--;
       return p;
    }
 
@@ -56,6 +57,7 @@ public class Board<AgentType extends Agent<AgentType>> {
       if (!p.equals(agentLookup.remove(a))) {
          throw new IllegalStateException("???");
       }
+      agentCnt--;
       return a;
    }
 
