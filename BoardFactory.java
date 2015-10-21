@@ -11,6 +11,8 @@ public class BoardFactory {
          return constructDoubleBoard(args, out);
       } else if (agentType.equals("multi")) {
          return constructMultiBoard(args, out);
+      } else if (agentType.equals("real")) {
+         return constructRealBoard(args, out);
       } else {
          throw new IllegalArgumentException("Unknown agent type: "+agentType);
       }
@@ -144,6 +146,46 @@ public class BoardFactory {
                   features[i] = rand.nextDouble() > threshes[i];
                }
                MultiAgent agent = new MultiAgent(maximizer, similarity, similarityMax, features);
+
+               board.addAgent(agent, new Point(r,c));
+            }
+         }
+      }
+      return board;
+   }
+
+   public static Board<MultiAgent> constructRealBoard(Arguments args, PrintStream out) {
+      long seed = args.getLong("seed",1);
+      int rows = args.getInt("rows", 13);
+      int cols = args.getInt("cols", 16);
+      double wSimilarity = args.getDbl("wSimilarity",0.7);
+      double bSimilarity = args.getDbl("bSimilarity",0.5);
+      double wSimilarityMax = args.getDbl("wSimilarityMax",1);
+      double bSimilarityMax = args.getDbl("bSimilarityMax",1);
+      double empty = args.getDbl("empty", 0.2);
+      double[] threshes = getThreshes(args);
+      boolean maximizer = args.getBool("maximizer", false);
+      printInitParams(threshes.length, seed, wSimilarity, empty, rows, cols, maximizer, threshes, out);
+      return constructRealBoard(seed, rows, cols, wSimilarity, bSimilarity, wSimilarityMax, bSimilarityMax, empty, threshes, maximizer);
+   }
+
+   public static Board<MultiAgent> constructRealBoard(long seed, int rows, int cols, double wSimilarity, double bSimilarity, double wSimilarityMax, double bSimilarityMax, double empty, double[] threshes, boolean maximizer) {
+      System.out.printf("Constructing a RealAgent board with seed=%d, rows=%d, cols=%d, wSimilarity=%.3f, bSimilarity=%.3f, wSimilarityMax=%.3f, bSimilarityMax=%.3f, empty=%.3f, threshes=%s, maximizer=%b...\n", seed, rows, cols, wSimilarity, bSimilarity, wSimilarityMax, bSimilarityMax, empty, toString(threshes), maximizer);
+      Random rand = new Random(seed);
+      Board<MultiAgent> board = new Board<>(rows, cols);
+      for (int r = 0; r < rows; r++) {
+         for (int c = 0; c < cols; c++) {
+            if (rand.nextDouble() > empty) {
+               boolean[] features = new boolean[threshes.length];
+               for (int i = 0; i < threshes.length; i++) {
+                  features[i] = rand.nextDouble() > threshes[i];
+               }
+               MultiAgent agent;
+               if (!features[0]) { //black
+                  agent = new MultiAgent(maximizer, bSimilarity, bSimilarityMax, features);
+               } else { //white
+                  agent = new MultiAgent(maximizer, wSimilarity, wSimilarityMax, features);
+               }
 
                board.addAgent(agent, new Point(r,c));
             }
