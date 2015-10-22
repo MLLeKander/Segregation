@@ -110,8 +110,8 @@ public abstract class AbstractAgent<AgentType extends AbstractAgent<AgentType>> 
    @SuppressWarnings("unchecked")
    public void act(Board<AgentType> b) {
       AgentType a = (AgentType)this;
-      Point from = b.removeAgent(a);
+      Point from = b.moveRemove(a);
       Point to = strategy.findPoint(b, a, from);
-      b.addAgent(a, to != null ? to : from);
+      b.moveAdd(a, to != null ? to : from);
    }
 }

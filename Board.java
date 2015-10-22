@@ -6,6 +6,9 @@ public class Board<AgentType extends Agent<AgentType>> {
    protected HashMap<AgentType, Point> agentLookup = new HashMap<AgentType, Point>();
    private int agentCnt = 0;
    private Point boardSize;
+   private Point prevMovePoint;
+   private AgentType prevMoveAgent;
+   private int epochMoveCount = 0;
 
    @SuppressWarnings("unchecked")
    public Board(int r, int c) {
@@ -61,6 +64,34 @@ public class Board<AgentType extends Agent<AgentType>> {
       return a;
    }
 
+   public AgentType moveRemove(Point p) {
+      if (prevMovePoint != null || prevMoveAgent != null) {
+         throw new IllegalStateException("???");
+      }
+      prevMovePoint = p;
+      return prevMoveAgent = removeAgent(p);
+   }
+
+   public Point moveRemove(AgentType a) {
+      if (prevMovePoint != null || prevMoveAgent != null) {
+         throw new IllegalStateException("???");
+      }
+      prevMoveAgent = a;
+      return prevMovePoint = removeAgent(a);
+   }
+
+   public void moveAdd(AgentType a, Point p) {
+      if (!a.equals(prevMoveAgent) || prevMovePoint == null) {
+         throw new IllegalStateException("???");
+      }
+      if (!p.equals(prevMovePoint)) {
+         epochMoveCount++;
+      }
+      addAgent(a,p);
+      prevMoveAgent = null;
+      prevMovePoint = null;
+   }
+
    public int getNumAgents() {
       return agentCnt;
    }
@@ -79,6 +110,7 @@ public class Board<AgentType extends Agent<AgentType>> {
     */
    @SuppressWarnings("unchecked")
    public boolean performEpoch() {
+      epochMoveCount = 0;
       ArrayList<AgentType> unsatisfieds = new ArrayList<AgentType>();
       for (AgentType[] row : cells) {
          for (AgentType a : row) {
@@ -91,7 +123,8 @@ public class Board<AgentType extends Agent<AgentType>> {
       for (AgentType a : unsatisfieds) {
          a.act(this);
       }
-      return unsatisfieds.size() != 0;
+      return epochMoveCount > 0;
+      //return unsatisfieds.size() != 0;
    }
 
    /**

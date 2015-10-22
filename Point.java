@@ -2,7 +2,7 @@ public class Point {
    int r, c;
    public Point(int r_, int c_) {r=r_; c=c_;}
    public boolean equals(Object o) {
-      if (o.getClass() != this.getClass()) {
+      if (o == null || o.getClass() != this.getClass()) {
          return false;
       }
       Point po = (Point)o;
