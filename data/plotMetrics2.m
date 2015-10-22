@@ -1,18 +1,19 @@
-function plotMetrics(data, postfix)
-    function [h1, h2] = plotHist(func1, func2, transform, heading, fileBase, figureNum)
+function plotMetrics2(data, postfix)
+    function [h1, h2] = plotHist(func1, func2, heading, fileBase, figureNum)
         if ~ishandle(figureNum)
             figure(figureNum)
         end
         set(0, 'CurrentFigure', figureNum);
         clf;
-        tmp1 = arrayfun(@(x) transform(func1(x)), s);
-        tmp2 = arrayfun(@(x) transform(func2(x)), s);
+        tmp1 = func1;
+        tmp2 = func2;
         h1 = histogram(tmp1);
         hold on;
         h2 = histogram(tmp2);
         newWidth = mean([h1.BinWidth h2.BinWidth]);
         h1.BinWidth = newWidth;
         h2.BinWidth = newWidth;
+
         %dataMin = min([tmp1 tmp2]);
         %dataMax = max([tmp1 tmp2]);
         %edges = linspace(dataMin,dataMax,100);
@@ -29,43 +30,33 @@ function plotMetrics(data, postfix)
         drawnow;
         print(sprintf('%s%s.png',fileBase,postfix),'-dpng');
 
-        if ~ishandle(figureNum+5)
-            figure(figureNum+5)
+        if ~ishandle(figureNum+10)
+            figure(figureNum+10)
         end
-        set(0, 'CurrentFigure', figureNum+5);
+        set(0, 'CurrentFigure', figureNum+10);
         clf
         histogram(tmp2-tmp1);
-        title(sprintf('%s\n(features=%d, emptiness=%.0d%%, %dx%d, %s, %d runs)',heading,numFeatures,emptiness*100,cols,rows,strat, length(tmp1)));
+        title(sprintf('%s (diff)\n(features=%d, emptiness=%.0d%%, %dx%d, %s, %d runs)',heading,numFeatures,emptiness*100,cols,rows,strat, length(tmp1)));
         xlabel('After - Before');
         ylabel('Counts');
         drawnow;
         print(sprintf('%s%s_diff.png',fileBase,postfix),'-dpng');
     end
-    if isstr(data)
-        s = readTSV(data);
-    else
-        s = data;
-    end
 
-    numFeatures = s(1).numFeatures;
-    emptiness = s(1).emptiness;
-    cols = s(1).cols;
-    rows = s(1).rows;
-    strat = s(1).strat;
+    numFeatures = data.numFeatures(1);
+    emptiness = data.emptiness(1);
+    cols = data.cols(1);
+    rows = data.rows(1);
+    strat = data.strat(1);
 
     if nargin < 2
-        postfix = sprintf('_%d_%.0d_%dx%d_%s',numFeatures, emptiness*100, cols, rows, strat(1));
+        postfix = sprintf('_%02d_%.0d_%dx%d_artificial',numFeatures, emptiness*100, cols, rows, strat(1));
     end
     
-    [h1,h2] = plotHist(@(x)(x.beforeSimilarity), @(x)(x.afterSimilarity), @mean, 'Average Agent Similarity Score', 'Similarity', 1);
-
-    [h1,h2] = plotHist(@(x)(x.beforeMooreClustering), @(x)(x.afterMooreClustering), @mean, 'Average Moore Cluster Size', 'Moore', 2);
-    [h1,h2] = plotHist(@(x)(x.beforeMooreClustering), @(x)(x.afterMooreClustering), @length, 'Number of Moore Clusters', 'MooreCnt', 3);
-    h1.BinWidth = 1;
-    h2.BinWidth = 1;
-
-    [h1,h2] = plotHist(@(x)(x.beforeNeumannClustering), @(x)(x.afterNeumannClustering), @mean, 'Average von Neumann Cluster Size', 'Neumann', 4);
-    [h1,h2] = plotHist(@(x)(x.beforeNeumannClustering), @(x)(x.afterNeumannClustering), @length, 'Number of von Neumann Clusters', 'NeumannCnt', 5);
-    h1.BinWidth = 1;
-    h2.BinWidth = 1;
+    identityFunc = @(x)(x);
+    [h1,h2] = plotHist(data.beforeSimilarity, data.afterSimilarity, 'Average Agent Similarity Score', 'Similarity', 1);
+    [h1,h2] = plotHist(data.beforeMooreClustering, data.afterMooreClustering, 'Number of Moore Clusters', 'Moore', 2);
+    [h1,h2] = plotHist(data.beforeSingleFeatureMooreClustering, data.afterSingleFeatureMooreClustering, 'Number of Moore Clusters (first feature)', 'Moore1', 3);
+    [h1,h2] = plotHist(data.beforeNeumannClustering, data.afterNeumannClustering, 'Number of von Neumann Clusters', 'Neumann', 4);
+    [h1,h2] = plotHist(data.beforeSingleFeatureNeumannClustering, data.afterSingleFeatureNeumannClustering, 'Number of von Neumann Clusters (first feature)', 'Neumann1', 5);
 end
